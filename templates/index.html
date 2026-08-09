@@ -1837,5 +1837,75 @@ body{
     updateStats();
     updateLogs();
 </script>
+<script>
+const fileInput = document.getElementById("fileInput");
+const uploadBox = document.getElementById("uploadBox");
+const selectedFile = document.getElementById("selectedFile");
+const fileName = document.getElementById("fileName");
+const fileSize = document.getElementById("fileSize");
+const removeFile = document.getElementById("removeFile");
+const uploadTitle = document.getElementById("uploadTitle");
+const uploadSubtitle = document.getElementById("uploadSubtitle");
+function formatSize(bytes) {
+    if (bytes < 1024) return bytes + " B";
+    if (bytes < 1024 * 1024)
+        return (bytes / 1024).toFixed(1) + " KB";
+    return (bytes / 1024 / 1024).toFixed(1) + " MB";
+}
+/* اختيار الملف */
+fileInput.addEventListener("change", function () {
+    if (!this.files.length) return;
+    const file = this.files[0];
+    const extension = file.name.split(".").pop().toLowerCase();
+    if (!["txt", "csv", "json"].includes(extension)) {
+        alert("يسمح فقط بملفات TXT و CSV و JSON");
+        this.value = "";
+        return;
+    }
+    fileName.textContent = file.name;
+    fileSize.textContent = formatSize(file.size);
+    selectedFile.classList.add("show");
+    uploadTitle.textContent = "تم اختيار الملف";
+    uploadSubtitle.textContent = "الملف جاهز للتحليل";
+});
+/* سحب الملف */
+uploadBox.addEventListener("dragover", function(e) {
+    e.preventDefault();
+    uploadBox.classList.add("dragging");
+});
+uploadBox.addEventListener("dragleave", function() {
+    uploadBox.classList.remove("dragging");
+});
+uploadBox.addEventListener("drop", function(e) {
+    e.preventDefault();
+    uploadBox.classList.remove("dragging");
+    if (!e.dataTransfer.files.length) return;
+    const file = e.dataTransfer.files[0];
+    const extension = file.name.split(".").pop().toLowerCase();
+    if (!["txt", "csv", "json"].includes(extension)) {
+        alert("يسمح فقط بملفات TXT و CSV و JSON");
+        return;
+    }
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(file);
+    fileInput.files = dataTransfer.files;
+    fileName.textContent = file.name;
+    fileSize.textContent = formatSize(file.size);
+    selectedFile.classList.add("show");
+    uploadTitle.textContent = "تم اختيار الملف";
+    uploadSubtitle.textContent = "الملف جاهز للتحليل";
+});
+/* حذف الملف */
+removeFile.addEventListener("click", function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    fileInput.value = "";
+    selectedFile.classList.remove("show");
+    uploadTitle.textContent = "اسحب الملف هنا";
+    uploadSubtitle.textContent = "أو اضغط لاختيار ملف من جهازك";
+});
+</script>
+</body>
+</html>
 </body>
 </html>
