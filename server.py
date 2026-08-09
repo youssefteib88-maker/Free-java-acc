@@ -9,7 +9,7 @@ from datetime import datetime
 # ============================================================
 # استيراد أداة الفحص الحقيقية (ggd.py)
 # ============================================================
-import ggd  # هذا يستورد الكود كاملاً
+import ggd
 from ggd import stats, check_account, FILE_MAP, bot, BOT_TOKEN, CHAT_ID
 
 app = Flask(__name__)
@@ -40,14 +40,18 @@ def get_stats():
         }
 
 def get_logs():
-    """جلب السجلات (محاكاة للوقت الحالي)"""
-    return [
-        {"time": datetime.now().strftime("%H:%M:%S"), "msg": f"✅ فحص {stats.checked} من {len(current_combos)}", "type": "ok"},
-        {"time": datetime.now().strftime("%H:%M:%S"), "msg": f"⛏ Minecraft: {stats.minecraft}", "type": "info"},
-        {"time": datetime.now().strftime("%H:%M:%S"), "msg": f"🎮 GamePass: {stats.gamepass}", "type": "info"},
-        {"time": datetime.now().strftime("%H:%M:%S"), "msg": f"🕹 Xbox: {stats.xbox}", "type": "info"},
-        {"time": datetime.now().strftime("%H:%M:%S"), "msg": f"🔓 NotLinked: {stats.not_linked}", "type": "info"},
-    ]
+    """جلب السجلات من ggd.py"""
+    with stats._lock:
+        return [
+            {"time": datetime.now().strftime("%H:%M:%S"), "msg": f"Checked: {stats.checked}", "type": "info"},
+            {"time": datetime.now().strftime("%H:%M:%S"), "msg": f"Hits: {stats.hits}", "type": "ok"},
+            {"time": datetime.now().strftime("%H:%M:%S"), "msg": f"Bad: {stats.bad}", "type": "warn"},
+            {"time": datetime.now().strftime("%H:%M:%S"), "msg": f"2FA: {stats.twofa}", "type": "info"},
+            {"time": datetime.now().strftime("%H:%M:%S"), "msg": f"Minecraft: {stats.minecraft}", "type": "ok"},
+            {"time": datetime.now().strftime("%H:%M:%S"), "msg": f"GamePass: {stats.gamepass}", "type": "ok"},
+            {"time": datetime.now().strftime("%H:%M:%S"), "msg": f"Xbox: {stats.xbox}", "type": "info"},
+            {"time": datetime.now().strftime("%H:%M:%S"), "msg": f"NotLinked: {stats.not_linked}", "type": "info"},
+        ]
 
 # ============================================================
 # تشغيل الفحص في خيط منفصل
@@ -72,10 +76,9 @@ def run_checker():
     stop_event.clear()
     stats.start_time = time.time()
 
-    # استدعاء دالة الفحص من ggd.py (تقوم بمسح الكومبوهات)
     def checker_thread():
         try:
-            ggd.start_checking()  # هذه الدالة موجودة في ggd.py
+            ggd.start_checking()
         except Exception as e:
             print(f"Error in checker: {e}")
         finally:
@@ -93,13 +96,22 @@ def run_checker():
 def index():
     return render_template('index.html')
 
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    if 'file' not in request.files:
+        return jsonify({"error": "No file"}), 400
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({"error": "No file selected"}), 400
+    file.save('combos.txt')
+    return jsonify({"message": "File uploaded successfully!"})
+
 @app.route('/api/start', methods=['POST'])
 def start():
     global current_combos, running
     if running:
         return jsonify({"status": "already_running"})
     
-    # تحميل الكومبوهات من ملف combos.txt
     combo_file = "combos.txt"
     if not os.path.exists(combo_file):
         return jsonify({"status": "error", "message": "combos.txt not found"})
@@ -110,9 +122,8 @@ def start():
     if not current_combos:
         return jsonify({"status": "error", "message": "No valid combos found"})
     
-    ggd.Combos = current_combos  # تمرير الكومبوهات إلى ggd
+    ggd.Combos = current_combos
     
-    # إعادة ضبط الإحصائيات
     with stats._lock:
         stats.checked = 0
         stats.hits = 0
