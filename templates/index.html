@@ -1640,7 +1640,7 @@ body{
 
 </main>
 <script>
-    const API = 'http://127.0.0.1:5000';
+    const API = window.location.origin;
     
     // تحديث الإحصائيات كل ثانية
     function updateStats() {
@@ -1730,7 +1730,7 @@ body{
     updateStats();
 </script>
 <script>
-    const API = 'http://127.0.0.1:5000';
+    const API = window.location.origin;
     
     function updateStats() {
         fetch(API + '/api/status')
@@ -1903,6 +1903,28 @@ removeFile.addEventListener("click", function(e) {
     selectedFile.classList.remove("show");
     uploadTitle.textContent = "اسحب الملف هنا";
     uploadSubtitle.textContent = "أو اضغط لاختيار ملف من جهازك";
+});
+document.getElementById('startBtn').addEventListener('click', function() {
+    const file = fileInput.files[0];
+    if (!file) {
+        alert('الرجاء اختيار ملف أولاً!');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    fetch(API + '/upload', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            alert(data.message || '✅ تم رفع الملف!');
+            // تشغيل الفحص تلقائياً
+            fetch(API + '/api/start', { method: 'POST' });
+        })
+        .catch(err => alert('❌ خطأ في الرفع: ' + err));
 });
 </script>
 </body>
