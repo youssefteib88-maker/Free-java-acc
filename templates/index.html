@@ -1,0 +1,1841 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>DroopFile — Dashboard</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap');
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+:root{
+    --bg:#050609;
+    --panel:#0c0d12;
+    --panel2:#101118;
+    --border:#1c1e27;
+    --text:#f5f5f7;
+    --muted:#70727d;
+    --pink:#ff174f;
+    --pink2:#ff3866;
+    --green:#26e39a;
+    --yellow:#ffc928;
+    --blue:#328cff;
+    --purple:#9d62ff;
+}
+
+body{
+    background:
+        radial-gradient(circle at 50% -20%,#25101a 0%,transparent 35%),
+        var(--bg);
+    color:var(--text);
+    font-family:'Cairo',sans-serif;
+    min-height:100vh;
+}
+
+/* ================= HEADER ================= */
+
+.header{
+    height:72px;
+    border-bottom:1px solid #171820;
+    background:rgba(5,6,9,.88);
+    backdrop-filter:blur(20px);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 28px;
+    position:sticky;
+    top:0;
+    z-index:50;
+}
+
+.logo{
+    display:flex;
+    align-items:center;
+    gap:11px;
+    direction:ltr;
+}
+
+.logo-icon{
+    width:34px;
+    height:34px;
+    border-radius:9px;
+    background:linear-gradient(135deg,#ff174f,#9e1747);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-weight:900;
+    box-shadow:0 0 22px rgba(255,23,79,.3);
+}
+
+.logo-text{
+    font-size:16px;
+    font-weight:900;
+}
+
+.logo-text span{
+    color:var(--pink);
+}
+
+.top-nav{
+    display:flex;
+    gap:7px;
+    direction:ltr;
+}
+
+.nav-btn{
+    border:1px solid transparent;
+    background:transparent;
+    color:#747681;
+    padding:9px 18px;
+    border-radius:9px;
+    font-family:inherit;
+    font-size:11px;
+    font-weight:700;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.nav-btn:hover{
+    color:#fff;
+    background:#101117;
+}
+
+.nav-btn.active{
+    color:#fff;
+    background:rgba(255,23,79,.1);
+    border-color:rgba(255,23,79,.18);
+}
+
+.status{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    direction:ltr;
+    background:#10130e;
+    border:1px solid #26331c;
+    padding:7px 11px;
+    border-radius:9px;
+    font-size:9px;
+    color:#b6c4a8;
+}
+
+.status-dot{
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:var(--green);
+    box-shadow:0 0 10px var(--green);
+}
+
+/* ================= MAIN ================= */
+
+.container{
+    width:min(1180px,calc(100% - 34px));
+    margin:25px auto 50px;
+}
+
+/* ================= TITLE ================= */
+
+.page-head{
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    margin-bottom:20px;
+}
+
+.page-title h1{
+    font-size:25px;
+    font-weight:900;
+}
+
+.page-title p{
+    color:var(--muted);
+    font-size:10px;
+    margin-top:2px;
+}
+
+.time{
+    color:#686a74;
+    font-family:monospace;
+    font-size:10px;
+}
+
+/* ================= INPUT ================= */
+
+.control{
+    background:linear-gradient(145deg,#101118,#0a0b0f);
+    border:1px solid var(--border);
+    border-radius:15px;
+    padding:15px;
+    display:flex;
+    gap:10px;
+    margin-bottom:17px;
+}
+
+.file-input{
+    flex:1;
+    height:42px;
+    background:#08090d;
+    border:1px solid #1b1d25;
+    border-radius:9px;
+    color:#ddd;
+    outline:none;
+    padding:0 13px;
+    font-family:monospace;
+    direction:ltr;
+}
+
+.file-input:focus{
+    border-color:rgba(255,23,79,.4);
+}
+
+.start{
+    height:42px;
+    padding:0 22px;
+    border:0;
+    border-radius:9px;
+    background:linear-gradient(135deg,#ff174f,#c90e3e);
+    color:white;
+    font-family:inherit;
+    font-size:11px;
+    font-weight:800;
+    cursor:pointer;
+    box-shadow:0 8px 25px rgba(255,23,79,.18);
+}
+
+/* ================= CARDS ================= */
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:12px;
+    margin-bottom:15px;
+}
+
+.card{
+    background:linear-gradient(145deg,#0f1016,#0a0b0f);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:16px;
+    position:relative;
+    overflow:hidden;
+}
+
+.card::after{
+    content:"";
+    position:absolute;
+    width:90px;
+    height:90px;
+    border-radius:50%;
+    right:-40px;
+    bottom:-50px;
+    filter:blur(25px);
+    opacity:.15;
+}
+
+.card.red::after{background:var(--pink)}
+.card.green::after{background:var(--green)}
+.card.yellow::after{background:var(--yellow)}
+.card.blue::after{background:var(--blue)}
+
+.card-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.card-label{
+    color:#747680;
+    font-size:10px;
+}
+
+.card-icon{
+    width:29px;
+    height:29px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    border-radius:8px;
+    background:#15161d;
+    font-size:11px;
+}
+
+.card-number{
+    font-size:27px;
+    font-weight:900;
+    margin-top:10px;
+}
+
+.card-foot{
+    display:flex;
+    justify-content:space-between;
+    color:#565862;
+    font-size:8px;
+    margin-top:8px;
+}
+
+/* ================= CHART AREA ================= */
+
+.analytics{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+    margin-bottom:15px;
+}
+
+.panel{
+    background:linear-gradient(145deg,#0f1016,#090a0e);
+    border:1px solid var(--border);
+    border-radius:15px;
+    padding:18px;
+}
+
+.panel-title{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:17px;
+}
+
+.panel-title h2{
+    font-size:12px;
+    font-weight:800;
+}
+
+.panel-title span{
+    color:#5e606b;
+    font-size:8px;
+}
+
+.donut-area{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:30px;
+    min-height:190px;
+}
+
+.donut{
+    width:150px;
+    height:150px;
+    border-radius:50%;
+    background:
+        conic-gradient(
+            var(--pink) 0 27%,
+            var(--green) 27% 53%,
+            var(--blue) 53% 76%,
+            var(--purple) 76% 88%,
+            var(--yellow) 88% 100%
+        );
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 0 30px rgba(255,23,79,.08);
+}
+
+.donut-inner{
+    width:112px;
+    height:112px;
+    background:#0b0c11;
+    border-radius:50%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+}
+
+.donut-inner strong{
+    font-size:25px;
+}
+
+.donut-inner span{
+    color:#646671;
+    font-size:8px;
+}
+
+.legend{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:9px;
+}
+
+.legend-item{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    color:#888a94;
+    font-size:9px;
+}
+
+.legend-dot{
+    width:7px;
+    height:7px;
+    border-radius:50%;
+}
+
+/* ================= SERVICES ================= */
+
+.services{
+    margin-bottom:15px;
+}
+
+.service-grid{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:7px;
+}
+
+.service{
+    min-height:38px;
+    background:#0b0c11;
+    border:1px solid #171922;
+    border-radius:7px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 9px;
+    transition:.2s;
+}
+
+.service:hover{
+    background:#11121a;
+    border-color:#282b36;
+    transform:translateY(-1px);
+}
+
+.service-name{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    color:#a7a8b0;
+    font-size:8px;
+}
+
+.service-dot{
+    width:5px;
+    height:5px;
+    border-radius:50%;
+    background:var(--green);
+}
+
+.service-count{
+    color:var(--green);
+    font-family:monospace;
+    font-size:9px;
+}
+
+/* ================= BOTTOM ================= */
+
+.bottom{
+    display:grid;
+    grid-template-columns:1.4fr .6fr;
+    gap:15px;
+}
+
+.log{
+    height:185px;
+    overflow:auto;
+    direction:ltr;
+    background:#07080b;
+    border:1px solid #15161d;
+    border-radius:9px;
+    padding:10px;
+    font-family:monospace;
+    font-size:9px;
+}
+
+.log-line{
+    padding:6px 5px;
+    border-bottom:1px solid #111218;
+    color:#70727c;
+}
+
+.log-line span{
+    color:#41434c;
+    margin-right:8px;
+}
+
+.log-line.ok{
+    color:#31c98d;
+}
+
+.log-line.info{
+    color:#5f9fff;
+}
+
+.log-line.warn{
+    color:#e4b72c;
+}
+
+/* ================= SYSTEM ================= */
+
+.system-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:12px 0;
+    border-bottom:1px solid #171820;
+}
+
+.system-row:last-child{
+    border-bottom:0;
+}
+
+.system-row span{
+    color:#686a75;
+    font-size:9px;
+}
+
+.system-row strong{
+    font-size:9px;
+}
+
+.online{
+    color:var(--green);
+}
+
+.progress{
+    height:5px;
+    background:#181921;
+    border-radius:20px;
+    margin-top:7px;
+    overflow:hidden;
+}
+
+.progress div{
+    height:100%;
+    border-radius:20px;
+    background:linear-gradient(90deg,var(--pink),#ff6688);
+}
+
+/* ================= FOOTER ================= */
+
+.footer{
+    display:flex;
+    justify-content:space-between;
+    color:#3e4049;
+    font-size:8px;
+    padding:18px 3px;
+    direction:ltr;
+}
+
+/* ================= MOBILE ================= */
+
+@media(max-width:850px){
+
+    .header{
+        padding:0 15px;
+    }
+
+    .top-nav{
+        display:none;
+    }
+
+    .status{
+        display:none;
+    }
+
+    .container{
+        width:calc(100% - 20px);
+        margin-top:17px;
+    }
+
+    .cards{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .analytics{
+        grid-template-columns:1fr;
+    }
+
+    .bottom{
+        grid-template-columns:1fr;
+    }
+
+    .service-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+}
+
+@media(max-width:500px){
+
+    .header{
+        height:60px;
+    }
+
+    .logo-text{
+        font-size:14px;
+    }
+
+    .page-head{
+        align-items:flex-start;
+    }
+
+    .time{
+        display:none;
+    }
+
+    .control{
+        flex-direction:column;
+    }
+
+    .start{
+        width:100%;
+    }
+
+    .cards{
+        gap:8px;
+    }
+
+    .card{
+        padding:13px;
+    }
+
+    .card-number{
+        font-size:23px;
+    }
+
+    .donut-area{
+        flex-direction:column;
+    }
+
+    .legend{
+        width:100%;
+    }
+
+    .service-grid{
+        grid-template-columns:1fr 1fr;
+    }
+}
+/* =========================================================
+   FILE UPLOAD
+========================================================= */
+
+.upload-section{
+    background:
+        linear-gradient(
+            145deg,
+            rgba(17,18,25,.96),
+            rgba(8,9,13,.96)
+        );
+
+    border:1px solid #1c1e27;
+    border-radius:16px;
+
+    padding:18px;
+
+    margin-bottom:17px;
+
+    box-shadow:
+        0 15px 45px rgba(0,0,0,.18);
+}
+
+.upload-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    margin-bottom:13px;
+}
+
+.upload-header h2{
+    font-size:13px;
+    font-weight:800;
+}
+
+.upload-header p{
+    color:#666873;
+    font-size:9px;
+    margin-top:2px;
+}
+
+.upload-type{
+    color:#ff3866;
+
+    font-family:monospace;
+    font-size:8px;
+
+    padding:6px 9px;
+
+    border-radius:7px;
+
+    background:rgba(255,23,79,.07);
+
+    border:1px solid rgba(255,23,79,.13);
+}
+
+
+/* =========================
+   DROP BOX
+========================= */
+
+.upload-box{
+
+    position:relative;
+
+    min-height:145px;
+
+    border:1px dashed #30323d;
+
+    border-radius:13px;
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(255,23,79,.055),
+            transparent 65%
+        ),
+        #090a0f;
+
+    display:flex;
+    flex-direction:column;
+
+    align-items:center;
+    justify-content:center;
+
+    cursor:pointer;
+
+    overflow:hidden;
+
+    transition:
+        border .25s ease,
+        background .25s ease,
+        transform .25s ease;
+}
+
+.upload-box::before{
+
+    content:"";
+
+    position:absolute;
+
+    inset:8px;
+
+    border:1px solid rgba(255,255,255,.025);
+
+    border-radius:9px;
+
+    pointer-events:none;
+}
+
+.upload-box:hover{
+
+    border-color:rgba(255,23,79,.55);
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(255,23,79,.10),
+            transparent 65%
+        ),
+        #0b0c11;
+
+    transform:translateY(-1px);
+
+}
+
+.upload-box.dragging{
+
+    border-color:#ff174f;
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(255,23,79,.15),
+            transparent 65%
+        ),
+        #0d0e14;
+
+    box-shadow:
+        0 0 35px rgba(255,23,79,.08);
+}
+
+
+/* =========================
+   FILE ICON
+========================= */
+
+.upload-icon{
+
+    margin-bottom:10px;
+}
+
+.file-icon{
+
+    position:relative;
+
+    width:45px;
+    height:53px;
+
+    border-radius:8px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #181a23,
+            #0e0f15
+        );
+
+    border:1px solid #30323c;
+
+    display:flex;
+
+    align-items:flex-end;
+    justify-content:flex-end;
+
+    padding:6px;
+
+    box-shadow:
+        0 10px 25px rgba(0,0,0,.3);
+}
+
+.file-icon::before{
+
+    content:"";
+
+    position:absolute;
+
+    top:0;
+    right:0;
+
+    width:16px;
+    height:16px;
+
+    background:#242631;
+
+    clip-path:polygon(
+        0 0,
+        100% 100%,
+        0 100%
+    );
+}
+
+.file-icon span{
+
+    position:absolute;
+
+    left:50%;
+    top:50%;
+
+    transform:
+        translate(-50%,-45%);
+
+    color:#ff315d;
+
+    font-size:22px;
+
+    font-weight:300;
+
+    line-height:1;
+}
+
+
+/* =========================
+   TEXT
+========================= */
+
+.upload-text{
+
+    display:flex;
+    flex-direction:column;
+
+    align-items:center;
+
+    text-align:center;
+}
+
+.upload-text strong{
+
+    color:#e8e8eb;
+
+    font-size:11px;
+
+    font-weight:800;
+}
+
+.upload-text span{
+
+    color:#656772;
+
+    font-size:9px;
+
+    margin-top:3px;
+}
+
+.upload-formats{
+
+    margin-top:8px;
+
+    color:#444650;
+
+    font-family:monospace;
+
+    font-size:7px;
+
+    letter-spacing:.7px;
+}
+
+
+/* =========================
+   SELECTED FILE
+========================= */
+
+.selected-file{
+
+    display:none;
+
+    align-items:center;
+
+    gap:11px;
+
+    margin-top:10px;
+
+    padding:10px 12px;
+
+    background:#0b0c11;
+
+    border:1px solid #20222c;
+
+    border-radius:10px;
+}
+
+.selected-file.show{
+
+    display:flex;
+
+    animation:fileIn .25s ease;
+}
+
+@keyframes fileIn{
+
+    from{
+        opacity:0;
+        transform:translateY(-5px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+.selected-file-icon{
+
+    width:34px;
+    height:38px;
+
+    border-radius:7px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:rgba(255,23,79,.08);
+
+    border:1px solid rgba(255,23,79,.15);
+
+    color:#ff315d;
+
+    font-size:14px;
+}
+
+.selected-file-info{
+
+    flex:1;
+
+    min-width:0;
+
+    display:flex;
+    flex-direction:column;
+}
+
+.selected-file-info strong{
+
+    color:#d8d9de;
+
+    font-family:monospace;
+
+    font-size:9px;
+
+    white-space:nowrap;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+
+    direction:ltr;
+
+    text-align:left;
+}
+
+.selected-file-info span{
+
+    color:#555862;
+
+    font-size:8px;
+
+    margin-top:2px;
+}
+
+.remove-file{
+
+    width:27px;
+    height:27px;
+
+    border:0;
+
+    border-radius:7px;
+
+    background:#15161d;
+
+    color:#777985;
+
+    font-size:16px;
+
+    cursor:pointer;
+
+    transition:.2s;
+}
+
+.remove-file:hover{
+
+    background:rgba(255,23,79,.1);
+
+    color:#ff315d;
+}
+
+
+/* =========================
+   START BUTTON
+========================= */
+
+.upload-section .start{
+
+    width:100%;
+
+    margin-top:11px;
+
+    height:44px;
+
+    border:0;
+
+    border-radius:10px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ff174f,
+            #c90e3e
+        );
+
+    color:#fff;
+
+    font-family:inherit;
+
+    font-size:10px;
+
+    font-weight:900;
+
+    letter-spacing:.3px;
+
+    cursor:pointer;
+
+    box-shadow:
+        0 8px 25px rgba(255,23,79,.17);
+
+    transition:.25s;
+}
+
+.upload-section .start:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:
+        0 12px 30px rgba(255,23,79,.25);
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:500px){
+
+    .upload-section{
+        padding:13px;
+    }
+
+    .upload-box{
+        min-height:135px;
+    }
+
+    .upload-header{
+        align-items:flex-start;
+    }
+
+    .upload-type{
+        display:none;
+    }
+
+}
+</style>
+</head>
+
+<body>
+
+<!-- ================= HEADER ================= -->
+
+<header class="header">
+
+    <div class="logo">
+        <div class="logo-icon">DF</div>
+
+        <div class="logo-text">
+            Droop<span>File</span>
+        </div>
+    </div>
+
+    <nav class="top-nav">
+        <button class="nav-btn active">✓ CHECKER</button>
+        <button class="nav-btn">▣ INBOX</button>
+        <button class="nav-btn">◈ ANALYTICS</button>
+    </nav>
+
+    <div class="status">
+        <span class="status-dot"></span>
+        SYSTEM READY
+    </div>
+
+</header>
+
+
+<main class="container">
+
+    <!-- TITLE -->
+
+    <div class="page-head">
+
+        <div class="page-title">
+            <h1>DroopFile Dashboard</h1>
+            <p>Advanced statistical analytics interface</p>
+        </div>
+
+        <div class="time">
+            LIVE • 05:27
+        </div>
+
+    </div>
+
+
+<!-- FILE UPLOAD -->
+
+<section class="upload-section">
+
+    <div class="upload-header">
+        <div>
+            <h2>إضافة ملف للتحليل</h2>
+            <p>اختر ملف البيانات من جهازك</p>
+        </div>
+
+        <span class="upload-type">FILE UPLOAD</span>
+    </div>
+
+    <label for="fileInput" class="upload-box" id="uploadBox">
+
+        <input
+            type="file"
+            id="fileInput"
+            hidden
+            accept=".txt,.csv,.json"
+        >
+
+        <div class="upload-icon">
+
+            <div class="file-icon">
+                <span>＋</span>
+            </div>
+
+        </div>
+
+        <div class="upload-text">
+
+            <strong id="uploadTitle">
+                اسحب الملف هنا
+            </strong>
+
+            <span id="uploadSubtitle">
+                أو اضغط لاختيار ملف من جهازك
+            </span>
+
+        </div>
+
+        <div class="upload-formats">
+            TXT &nbsp; • &nbsp; CSV &nbsp; • &nbsp; JSON
+        </div>
+
+    </label>
+
+    <!-- Selected file -->
+
+    <div class="selected-file" id="selectedFile">
+
+        <div class="selected-file-icon">
+            ▣
+        </div>
+
+        <div class="selected-file-info">
+
+            <strong id="fileName">
+                file.txt
+            </strong>
+
+            <span id="fileSize">
+                0 KB
+            </span>
+
+        </div>
+
+        <button
+            type="button"
+            id="removeFile"
+            class="remove-file">
+            ×
+        </button>
+
+    </div>
+
+    <button
+        id="startBtn"
+        class="start"
+        type="button">
+
+        ▶ START ANALYSIS
+
+    </button>
+
+</section>
+    <!-- STAT CARDS -->
+
+    <section class="cards">
+
+        <div class="card red">
+
+            <div class="card-head">
+                <span class="card-label">TOTAL ITEMS</span>
+                <div class="card-icon">Σ</div>
+            </div>
+
+            <div class="card-number" id="total">0</div>
+
+            <div class="card-foot">
+                <span>Total processed</span>
+                <span>100%</span>
+            </div>
+
+        </div>
+
+
+        <div class="card green">
+
+            <div class="card-head">
+                <span class="card-label">MATCHED</span>
+                <div class="card-icon">✓</div>
+            </div>
+
+            <div class="card-number" id="hits">0</div>
+
+            <div class="card-foot">
+                <span>Results</span>
+                <span id="hitPercent">0%</span>
+            </div>
+
+        </div>
+
+
+        <div class="card yellow">
+
+            <div class="card-head">
+                <span class="card-label">REVIEW</span>
+                <div class="card-icon">!</div>
+            </div>
+
+            <div class="card-number" id="twofa">0</div>
+
+            <div class="card-foot">
+                <span>Additional review</span>
+                <span id="twofaPercent">0%</span>
+            </div>
+
+        </div>
+
+
+        <div class="card blue">
+
+            <div class="card-head">
+                <span class="card-label">FAILED</span>
+                <div class="card-icon">×</div>
+            </div>
+
+            <div class="card-number" id="bad">0</div>
+
+            <div class="card-foot">
+                <span>Rejected</span>
+                <span id="badPercent">0%</span>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ANALYTICS -->
+
+    <section class="analytics">
+
+        <div class="panel">
+
+            <div class="panel-title">
+                <div>
+                    <h2>ANALYTICS OVERVIEW</h2>
+                    <span>Live distribution</span>
+                </div>
+
+                <span>LIVE</span>
+            </div>
+
+            <div class="donut-area">
+
+                <div class="donut">
+
+                    <div class="donut-inner">
+                        <strong id="donutTotal">40</strong>
+                        <span>SERVICES</span>
+                    </div>
+
+                </div>
+
+                <div class="legend">
+
+                    <div class="legend-item">
+                        <span class="legend-dot" style="background:#ff174f"></span>
+                        Hotmail
+                    </div>
+
+                    <div class="legend-item">
+                        <span class="legend-dot" style="background:#26e39a"></span>
+                        WhatsApp
+                    </div>
+
+                    <div class="legend-item">
+                        <span class="legend-dot" style="background:#328cff"></span>
+                        TikTok
+                    </div>
+
+                    <div class="legend-item">
+                        <span class="legend-dot" style="background:#9d62ff"></span>
+                        Twitter
+                    </div>
+
+                    <div class="legend-item">
+                        <span class="legend-dot" style="background:#ffc928"></span>
+                        Other
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="panel">
+
+            <div class="panel-title">
+                <div>
+                    <h2>INBOX STATISTICS</h2>
+                    <span>Current overview</span>
+                </div>
+
+                <span>27%</span>
+            </div>
+
+            <div style="padding:15px 0">
+
+                <div class="system-row">
+                    <span>Hotmail Inbox Hits</span>
+                    <strong style="color:#ff3866">19 / 70</strong>
+                </div>
+
+                <div class="progress">
+                    <div style="width:27%"></div>
+                </div>
+
+            </div>
+
+            <div class="system-row">
+                <span>Detected Services</span>
+                <strong style="color:#26e39a">40</strong>
+            </div>
+
+            <div class="system-row">
+                <span>System Status</span>
+                <strong class="online">READY</strong>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- SERVICES -->
+
+    <section class="panel services">
+
+        <div class="panel-title">
+
+            <div>
+                <h2>DETECTED SERVICES (40)</h2>
+                <span>Service statistics</span>
+            </div>
+
+            <span style="color:#26e39a">● LIVE</span>
+
+        </div>
+
+
+        <div class="service-grid">
+
+            <div class="service">
+                <div class="service-name">
+                    <i class="service-dot"></i> Warframe
+                </div>
+                <span class="service-count">2</span>
+            </div>
+
+            <div class="service">
+                <div class="service-name">
+                    <i class="service-dot"></i> Copilot
+                </div>
+                <span class="service-count">2</span>
+            </div>
+
+            <div class="service">
+                <div class="service-name">
+                    <i class="service-dot"></i> DeepSeek
+                </div>
+                <span class="service-count">2</span>
+            </div>
+
+            <div class="service">
+                <div class="service-name">
+                    <i class="service-dot"></i> TikTok
+                </div>
+                <span class="service-count">1</span>
+            </div>
+
+            <div class="service">
+                <div class="service-name">
+                    <i class="service-dot"></i> Twitter
+                </div>
+                <span class="service-count">1</span>
+            </div>
+
+            <div class="service">
+                <div class="service-name">
+                    <i class="service-dot"></i> LinkedIn
+                </div>
+                <span class="service-count">1</span>
+            </div>
+
+            <div class="service">
+                <div class="service-name">
+                    <i class="service-dot"></i> WhatsApp
+                </div>
+                <span class="service-count">2</span>
+            </div>
+
+            <div class="service">
+                <div class="service-name">
+                    <i class="service-dot"></i> Reddit
+                </div>
+                <span class="service-count">1</span>
+            </div>
+
+            <div class="service">
+                <div class="service-name">
+                    <i class="service-dot"></i> Line
+                </div>
+                <span class="service-count">1</span>
+            </div>
+
+            <div class="service">
+                <div class="service-name">
+                    <i class="service-dot"></i> Zoom
+                </div>
+                <span class="service-count">1</span>
+            </div>
+
+            <div class="service">
+                <div class="service-name">
+                    <i class="service-dot"></i> Medium
+                </div>
+                <span class="service-count">1</span>
+            </div>
+
+            <div class="service">
+                <div class="service-name">
+                    <i class="service-dot"></i> Steam
+                </div>
+                <span class="service-count">1</span>
+            </div>
+
+            <div class="service">
+                <div class="service-name">
+                    <i class="service-dot"></i> Xbox
+                </div>
+                <span class="service-count">1</span>
+            </div>
+
+            <div class="service">
+                <div class="service-name">
+                    <i class="service-dot"></i> EpicGames
+                </div>
+                <span class="service-count">1</span>
+            </div>
+
+            <div class="service">
+                <div class="service-name">
+                    <i class="service-dot"></i> EA
+                </div>
+                <span class="service-count">1</span>
+            </div>
+
+            <div class="service">
+                <div class="service-name">
+                    <i class="service-dot"></i> Blizzard
+                </div>
+                <span class="service-count">1</span>
+            </div>
+
+            <div class="service">
+                <div class="service-name">
+                    <i class="service-dot"></i> RiotGames
+                </div>
+                <span class="service-count">1</span>
+            </div>
+
+            <div class="service">
+                <div class="service-name">
+                    <i class="service-dot"></i> ClashRoyale
+                </div>
+                <span class="service-count">1</span>
+            </div>
+
+            <div class="service">
+                <div class="service-name">
+                    <i class="service-dot"></i> Spotify
+                </div>
+                <span class="service-count">1</span>
+            </div>
+
+            <div class="service">
+                <div class="service-name">
+                    <i class="service-dot"></i> DisneyPlus
+                </div>
+                <span class="service-count">1</span>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- BOTTOM -->
+
+    <section class="bottom">
+
+        <div class="panel">
+
+            <div class="panel-title">
+
+                <div>
+                    <h2>LIVE ACTIVITY</h2>
+                    <span>System events</span>
+                </div>
+
+                <span style="color:#26e39a">● LIVE</span>
+
+            </div>
+
+            <div class="log" id="log-area">
+
+                <div class="log-line info">
+                    <span>[05:27:01]</span>
+                    Dashboard initialized
+                </div>
+
+                <div class="log-line ok">
+                    <span>[05:27:02]</span>
+                    System ready
+                </div>
+
+                <div class="log-line">
+                    <span>[05:27:04]</span>
+                    Waiting for analysis...
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="panel">
+
+            <div class="panel-title">
+
+                <div>
+                    <h2>SYSTEM STATUS</h2>
+                    <span>Performance</span>
+                </div>
+
+            </div>
+
+            <div class="system-row">
+                <span>Service</span>
+                <strong class="online">ONLINE</strong>
+            </div>
+
+            <div class="system-row">
+                <span>Progress</span>
+                <strong id="progressText">0%</strong>
+            </div>
+
+            <div class="progress">
+                <div id="mainProgress" style="width:0%"></div>
+            </div>
+
+            <div class="system-row">
+                <span>Status</span>
+                <strong id="scanStatus">READY</strong>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <footer class="footer">
+
+        <span>DroopFile Analytics Platform</span>
+        <span>System Operational • v1.0</span>
+
+    </footer>
+
+</main>
+<script>
+    const API = 'http://127.0.0.1:5000';
+    
+    // تحديث الإحصائيات كل ثانية
+    function updateStats() {
+        fetch(API + '/api/status')
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('total').textContent = data.total || 0;
+                document.getElementById('hits').textContent = data.hits || 0;
+                document.getElementById('twofa').textContent = data.twofa || 0;
+                document.getElementById('bad').textContent = data.bad || 0;
+                
+                document.getElementById('hitPercent').textContent = data.hitPercent + '%';
+                document.getElementById('twofaPercent').textContent = data.twofaPercent + '%';
+                document.getElementById('badPercent').textContent = data.badPercent + '%';
+                
+                document.getElementById('progressText').textContent = data.progress + '%';
+                document.getElementById('mainProgress').style.width = data.progress + '%';
+                
+                let statusText = document.getElementById('scanStatus');
+                if (data.status === 'SCANNING') {
+                    statusText.textContent = '⏳ جاري الفحص...';
+                    statusText.style.color = '#ffc928';
+                } else if (data.status === 'COMPLETED') {
+                    statusText.textContent = '✅ مكتمل';
+                    statusText.style.color = '#26e39a';
+                } else {
+                    statusText.textContent = '🔴 جاهز';
+                    statusText.style.color = '#70727d';
+                }
+                
+                // تحديث الدونات
+                const services = data.services || {};
+                const totalServices = Object.values(services).reduce((a, b) => a + b, 0);
+                document.getElementById('donutTotal').textContent = totalServices || 0;
+                
+                // تحديث الخدمات
+                const serviceGrid = document.querySelector('.service-grid');
+                if (serviceGrid) {
+                    let html = '';
+                    for (const [name, count] of Object.entries(services)) {
+                        if (count > 0) {
+                            html += `
+                                <div class="service">
+                                    <div class="service-name">
+                                        <i class="service-dot"></i> ${name}
+                                    </div>
+                                    <span class="service-count">${count}</span>
+                                </div>
+                            `;
+                        }
+                    }
+                    if (html) {
+                        serviceGrid.innerHTML = html;
+                    }
+                }
+                
+                // تحديث السجلات
+                const logArea = document.getElementById('log-area');
+                if (logArea && data.logs) {
+                    logArea.innerHTML = data.logs.slice(-10).map(log => `
+                        <div class="log-line ${log.type || ''}">
+                            <span>[${log.time}]</span>
+                            ${log.msg}
+                        </div>
+                    `).join('');
+                }
+            })
+            .catch(err => console.log('خطأ في التحديث:', err));
+    }
+    
+    // بدء الفحص
+    document.getElementById('startBtn')?.addEventListener('click', function() {
+        fetch(API + '/api/start', { method: 'POST' })
+            .then(() => {
+                this.textContent = '⏳ جاري...';
+                this.disabled = true;
+                setTimeout(() => {
+                    this.textContent = '▶ START ANALYSIS';
+                    this.disabled = false;
+                }, 2000);
+            })
+            .catch(err => alert('خطأ: ' + err));
+    });
+    
+    // تحديث كل ثانية
+    setInterval(updateStats, 1000);
+    updateStats();
+</script>
+<script>
+    const API = 'http://127.0.0.1:5000';
+    
+    function updateStats() {
+        fetch(API + '/api/status')
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('total').textContent = data.total || 0;
+                document.getElementById('hits').textContent = data.hits || 0;
+                document.getElementById('twofa').textContent = data.twofa || 0;
+                document.getElementById('bad').textContent = data.bad || 0;
+                
+                const hitP = document.getElementById('hitPercent');
+                if (hitP) hitP.textContent = (data.total > 0 ? Math.round((data.hits / data.total) * 100) : 0) + '%';
+                
+                const twofaP = document.getElementById('twofaPercent');
+                if (twofaP) twofaP.textContent = (data.total > 0 ? Math.round((data.twofa / data.total) * 100) : 0) + '%';
+                
+                const badP = document.getElementById('badPercent');
+                if (badP) badP.textContent = (data.total > 0 ? Math.round((data.bad / data.total) * 100) : 0) + '%';
+                
+                const progress = data.progress || 0;
+                document.getElementById('progressText').textContent = progress + '%';
+                document.getElementById('mainProgress').style.width = progress + '%';
+                
+                const statusText = document.getElementById('scanStatus');
+                if (data.status === 'SCANNING') {
+                    statusText.textContent = '⏳ Scanning...';
+                    statusText.style.color = '#ffc928';
+                } else if (data.status === 'COMPLETED') {
+                    statusText.textContent = '✅ Completed';
+                    statusText.style.color = '#26e39a';
+                } else {
+                    statusText.textContent = '🟢 Ready';
+                    statusText.style.color = '#26e39a';
+                }
+                
+                // تحديث الدونات
+                const services = data.services || {};
+                const totalServices = Object.values(services).reduce((a, b) => a + b, 0);
+                document.getElementById('donutTotal').textContent = totalServices || 0;
+                
+                // تحديث الخدمات
+                const serviceGrid = document.querySelector('.service-grid');
+                if (serviceGrid) {
+                    let html = '';
+                    for (const [name, count] of Object.entries(services)) {
+                        if (count > 0) {
+                            html += `
+                                <div class="service">
+                                    <div class="service-name">
+                                        <i class="service-dot"></i> ${name}
+                                    </div>
+                                    <span class="service-count">${count}</span>
+                                </div>
+                            `;
+                        }
+                    }
+                    if (html) {
+                        serviceGrid.innerHTML = html;
+                    }
+                }
+            })
+            .catch(err => console.log('Error:', err));
+    }
+    
+    function updateLogs() {
+        fetch(API + '/api/logs')
+            .then(res => res.json())
+            .then(logs => {
+                const logArea = document.getElementById('log-area');
+                if (logArea) {
+                    logArea.innerHTML = logs.slice(-10).map(log => `
+                        <div class="log-line ${log.type || ''}">
+                            <span>[${log.time}]</span>
+                            ${log.msg}
+                        </div>
+                    `).join('');
+                }
+            })
+            .catch(err => console.log('Log error:', err));
+    }
+    
+    // بدء الفحص
+    document.getElementById('startBtn')?.addEventListener('click', function() {
+        fetch(API + '/api/start', { method: 'POST' })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'started') {
+                    this.textContent = '⏳ Scanning...';
+                    this.disabled = true;
+                    setTimeout(() => {
+                        this.textContent = '▶ START ANALYSIS';
+                        this.disabled = false;
+                    }, 3000);
+                } else {
+                    alert('Error: ' + (data.message || 'Could not start'));
+                }
+            })
+            .catch(err => alert('Error: ' + err));
+    });
+    
+    // تحديث كل ثانية
+    setInterval(updateStats, 1000);
+    setInterval(updateLogs, 2000);
+    updateStats();
+    updateLogs();
+</script>
+</body>
+</html>
